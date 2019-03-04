@@ -267,7 +267,7 @@ window.vDom = __webpack_require__(3)
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.el = __webpack_require__(4)
+exports.h = __webpack_require__(4)
 exports.diff = __webpack_require__(5)
 exports.patch = __webpack_require__(1)
 
@@ -281,16 +281,16 @@ const _ = __webpack_require__(0)
  * Virtual DOM
  * @param {String} tagName
  * @param {Object} props
- * @param {Array<Element>|String} children
+ * @param {Array<h>|String} children
  */
 
 
-function Element(tagName, props, children) {
-    if (!(this instanceof Element)) {
+function h(tagName, props, children) {
+    if (!(this instanceof h)) {
         if (!_.isArray(children) && children !== null) {
             children = _.slice(arguments, 2).filter(_.truthy)
         }
-        return new Element(tagName, props, children)
+        return new h(tagName, props, children)
     }
     // 未填写 props 选项时，props 置 {}
     if (_.isArray(props)) {
@@ -306,7 +306,7 @@ function Element(tagName, props, children) {
     let count = 0
 
     _.each(this.children, (child, i) => {
-        if (child instanceof Element) {
+        if (child instanceof h) {
             count += child.count
         } else {
             children[i] = '' + child
@@ -317,7 +317,7 @@ function Element(tagName, props, children) {
     this.count = count
 }
 
-Element.prototype.render = function () {
+h.prototype.render = function () {
     const el = document.createElement(this.tagName)
     const props = this.props
 
@@ -327,7 +327,7 @@ Element.prototype.render = function () {
     }
 
     _.each(this.children, child => {
-        const childEl = child instanceof Element 
+        const childEl = child instanceof h 
         ? child.render()
         : document.createTextNode(child)
         el.appendChild(childEl)
@@ -335,7 +335,7 @@ Element.prototype.render = function () {
     return el
 }
 
-module.exports = Element
+module.exports = h
 
 /***/ }),
 /* 5 */

@@ -11,28 +11,28 @@
 <body>
     <script src="../dist/bundle.js"></script>
     <script>
-        const { el, diff, patch } = window.vDom
+        const { h, diff, patch } = window.vDom
         
-        const tree = el('div', { 'id': 'container' }, [
-            el('h1', { style: 'color: blue' }, ['simple virtal dom']),
-            el('p', ['Hello, virtual-dom']),
-            el('ul', [el('li')])
+        const tree = h('div', { 'id': 'container' }, [
+            h('h1', { style: 'color: blue' }, ['simple virtal dom']),
+            h('p', ['Hello, virtual-dom']),
+            h('ul', [h('li')])
         ])
 
         const root = tree.render()
         document.body.appendChild(root)
 
-        const newTree = el('div', { 'id': 'container' }, [
-            el('h1', { style: 'color: red' }, ['simple virtal dom']),
-            el('p', ['Hello, virtual-dom']),
-            el('ul', [el('li'), el('li')])
+        const newTree = h('div', { 'id': 'container' }, [
+            h('h1', { style: 'color: red' }, ['simple virtal dom']),
+            h('p', ['Hello, virtual-dom']),
+            h('ul', [h('li'), h('li')])
         ])
 
         const patches = diff(tree, newTree)
 
         console.log('patches: %o', patches)
 
-        patch(root, patches)
+        // patch(root, patches)
     </script>
 </body>
 
