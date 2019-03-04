@@ -1,0 +1,1 @@
+window.vDom = require('./lib')
