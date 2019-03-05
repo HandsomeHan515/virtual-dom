@@ -1,32 +1,30 @@
-const _ = exports
-
-_.type = function type(obj) {
+export const type = function (obj) {
     return Object.prototype.toString.call(obj).replace(/\[object\s|\]/g, '')
 }
 
-_.isArray = function isArray(obj) {
-    return _.type(obj) === 'Array'
+export const isArray = function (obj) {
+    return type(obj) === 'Array'
 }
 
-_.isString = function isString(obj) {
-    return _.type(obj) === 'String'
+export const isString = function (obj) {
+    return type(obj) === 'String'
 }
 
-_.slice = function slice(arr, index) {
+export const slice = function (arr, index) {
     return Array.prototype.slice.call(arr, index)
 }
 
-_.truthy = function truthy(value) {
+export const truthy = function (value) {
     return !!value
 }
 
-_.each = function each(arr, fn) {
+export const each = function (arr, fn) {
     for (let i = 0, len = arr.length; i < len; i++) {
         fn(arr[i], i)
     }
 }
 
-_.toArray = function toArray(arr) {
+export const toArray = function (arr) {
     if (!arr) return []
 
     let list = []
@@ -36,8 +34,8 @@ _.toArray = function toArray(arr) {
     return []
 }
 
-_.setAttr = function setAttr(node, key, value) {
-    switch(key) {
+export const setAttr = function (node, key, value) {
+    switch (key) {
         case 'style':
             node.style.cssText = value
             break
