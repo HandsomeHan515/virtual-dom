@@ -11,22 +11,42 @@
 <body>
     <script src="../dist/bundle.js"></script>
     <script>
-        console.log('vdom', vDom)
         const { h, diff, patch } = vDom
-        
-        const tree = new h('div', { 'id': 'container' }, [
-            new h('h1', { style: 'color: blue' }, ['simple virtal dom']),
-            new h('p', ['Hello, virtual-dom']),
-            new h('ul', [new h('li')])
+
+
+        // let oldTree = h('ul', { id: 'list' }, [
+        //     h('li', { key: 1 }, ['Item 1']),
+        //     h('li', {}, ['Item']),
+        //     h('li', { key: 2 }, ['Item 2']),
+        //     h('li', { key: 3 }, ['Item 3'])
+        // ])
+
+        // let newTree = h('ul', { id: 'list' }, [
+        //     h('li', { key: 3 }, ['Item 3']),
+        //     h('li', { key: 1 }, ['Item 1']),
+        //     h('li', {}, ['Item']),
+        //     h('li', { key: 4 }, ['Item 4'])
+        // ])
+
+        // const patches = diff(oldTree, newTree)
+
+        // console.log('patches: %o', patches)
+
+        const tree = h('div', { 'id': 'container' }, [
+            h('h2', { style: 'color: orange' }),
+            h('h1', { style: 'color: blue' }, ['simple virtal dom']),
+            h('p', ['Hello, virtual-dom']),
+            h('ul', [h('li')])
         ])
 
         const root = tree.render()
         document.body.appendChild(root)
 
-        const newTree = new h('div', { 'id': 'container' }, [
-            new h('h1', { style: 'color: red' }, ['simple virtal dom']),
-            new h('p', ['Hello, virtual-dom']),
-            new h('ul', [new h('li'), new h('li')])
+        const newTree = h('div', { 'id': 'container', 'class': 'wrapper' }, [
+            h('h3', { style: 'color: orange' }),
+            h('h1', { style: 'color: red', class: 'inner' }, ['simple virtal dom']),
+            h('p', { style: 'color: blue' }, ['Hello, virtual-dom']),
+            h('ul', [h('li'), h('li')])
         ])
 
         const patches = diff(tree, newTree)

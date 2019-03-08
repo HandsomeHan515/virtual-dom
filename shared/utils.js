@@ -40,7 +40,7 @@ export const setAttr = function (node, key, value) {
             node.style.cssText = value
             break
         case 'value':
-            const tagName = node.tagName || ''
+            let tagName = node.tagName || ''
             tagName = tagName.toLowerCase()
             if (tagName === 'input' || tagName === 'textarea') {
                 node.value = value
@@ -53,3 +53,6 @@ export const setAttr = function (node, key, value) {
     }
 }
 
+export const remove = function (list, i) {
+    list.splice(i, 1)
+}

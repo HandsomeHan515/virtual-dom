@@ -81,233 +81,79 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(1).diff
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/**
- * Diff two list in O(N).
- * @param {Array} oldList - Original List
- * @param {Array} newList - List After certain insertions, removes, or moves
- * @return {Object} - {moves: <Array>}
- *                  - moves is a list of actions that telling how to remove and insert
- */
-function diff (oldList, newList, key) {
-  var oldMap = makeKeyIndexAndFree(oldList, key)
-  var newMap = makeKeyIndexAndFree(newList, key)
-
-  var newFree = newMap.free
-
-  var oldKeyIndex = oldMap.keyIndex
-  var newKeyIndex = newMap.keyIndex
-
-  var moves = []
-
-  // a simulate list to manipulate
-  var children = []
-  var i = 0
-  var item
-  var itemKey
-  var freeIndex = 0
-
-  // fist pass to check item in old list: if it's removed or not
-  while (i < oldList.length) {
-    item = oldList[i]
-    itemKey = getItemKey(item, key)
-    if (itemKey) {
-      if (!newKeyIndex.hasOwnProperty(itemKey)) {
-        children.push(null)
-      } else {
-        var newItemIndex = newKeyIndex[itemKey]
-        children.push(newList[newItemIndex])
-      }
-    } else {
-      var freeItem = newFree[freeIndex++]
-      children.push(freeItem || null)
-    }
-    i++
-  }
-
-  var simulateList = children.slice(0)
-
-  // remove items no longer exist
-  i = 0
-  while (i < simulateList.length) {
-    if (simulateList[i] === null) {
-      remove(i)
-      removeSimulate(i)
-    } else {
-      i++
-    }
-  }
-
-  // i is cursor pointing to a item in new list
-  // j is cursor pointing to a item in simulateList
-  var j = i = 0
-  while (i < newList.length) {
-    item = newList[i]
-    itemKey = getItemKey(item, key)
-
-    var simulateItem = simulateList[j]
-    var simulateItemKey = getItemKey(simulateItem, key)
-
-    if (simulateItem) {
-      if (itemKey === simulateItemKey) {
-        j++
-      } else {
-        // new item, just inesrt it
-        if (!oldKeyIndex.hasOwnProperty(itemKey)) {
-          insert(i, item)
-        } else {
-          // if remove current simulateItem make item in right place
-          // then just remove it
-          var nextItemKey = getItemKey(simulateList[j + 1], key)
-          if (nextItemKey === itemKey) {
-            remove(i)
-            removeSimulate(j)
-            j++ // after removing, current j is right, just jump to next one
-          } else {
-            // else insert item
-            insert(i, item)
-          }
-        }
-      }
-    } else {
-      insert(i, item)
-    }
-
-    i++
-  }
-
-  function remove (index) {
-    var move = {index: index, type: 0}
-    moves.push(move)
-  }
-
-  function insert (index, item) {
-    var move = {index: index, item: item, type: 1}
-    moves.push(move)
-  }
-
-  function removeSimulate (index) {
-    simulateList.splice(index, 1)
-  }
-
-  return {
-    moves: moves,
-    children: children
-  }
-}
-
-/**
- * Convert list to key-item keyIndex object.
- * @param {Array} list
- * @param {String|Function} key
- */
-function makeKeyIndexAndFree (list, key) {
-  var keyIndex = {}
-  var free = []
-  for (var i = 0, len = list.length; i < len; i++) {
-    var item = list[i]
-    var itemKey = getItemKey(item, key)
-    if (itemKey) {
-      keyIndex[itemKey] = i
-    } else {
-      free.push(item)
-    }
-  }
-  return {
-    keyIndex: keyIndex,
-    free: free
-  }
-}
-
-function getItemKey (item, key) {
-  if (!item || !key) return void 666
-  return typeof key === 'string'
-    ? item[key]
-    : key(item)
-}
-
-exports.makeKeyIndexAndFree = makeKeyIndexAndFree // exports for test
-exports.diff = diff
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
 // CONCATENATED MODULE: ./shared/utils.js
-const type = function (obj) {
-    return Object.prototype.toString.call(obj).replace(/\[object\s|\]/g, '')
-}
+var type = function type(obj) {
+  return Object.prototype.toString.call(obj).replace(/\[object\s|\]/g, '');
+};
+var isArray = function isArray(obj) {
+  return type(obj) === 'Array';
+};
+var isString = function isString(obj) {
+  return type(obj) === 'String';
+};
+var slice = function slice(arr, index) {
+  return Array.prototype.slice.call(arr, index);
+};
+var truthy = function truthy(value) {
+  return !!value;
+};
+var each = function each(arr, fn) {
+  for (var i = 0, len = arr.length; i < len; i++) {
+    fn(arr[i], i);
+  }
+};
+var toArray = function toArray(arr) {
+  if (!arr) return [];
+  var list = [];
 
-const isArray = function (obj) {
-    return type(obj) === 'Array'
-}
+  for (var i = 0, len = arr.length; i < len; i++) {
+    list.push(arr[i]);
+  }
 
-const isString = function (obj) {
-    return type(obj) === 'String'
-}
+  return [];
+};
+var setAttr = function setAttr(node, key, value) {
+  switch (key) {
+    case 'style':
+      node.style.cssText = value;
+      break;
 
-const slice = function (arr, index) {
-    return Array.prototype.slice.call(arr, index)
-}
+    case 'value':
+      var tagName = node.tagName || '';
+      tagName = tagName.toLowerCase();
 
-const truthy = function (value) {
-    return !!value
-}
+      if (tagName === 'input' || tagName === 'textarea') {
+        node.value = value;
+      } else {
+        node.setAttribute(key, value);
+      }
 
-const each = function (arr, fn) {
-    for (let i = 0, len = arr.length; i < len; i++) {
-        fn(arr[i], i)
-    }
-}
+      break;
 
-const toArray = function (arr) {
-    if (!arr) return []
-
-    let list = []
-    for (var i = 0, len = arr.length; i < len; i++) {
-        list.push(arr[i])
-    }
-    return []
-}
-
-const setAttr = function (node, key, value) {
-    switch (key) {
-        case 'style':
-            node.style.cssText = value
-            break
-        case 'value':
-            const tagName = node.tagName || ''
-            tagName = tagName.toLowerCase()
-            if (tagName === 'input' || tagName === 'textarea') {
-                node.value = value
-            } else {
-                node.setAttribute(key, value)
-            }
-            break
-        default:
-            node.setAttribute(key, value)
-    }
-}
-
-
+    default:
+      node.setAttribute(key, value);
+  }
+};
+var utils_remove = function remove(list, i) {
+  list.splice(i, 1);
+};
 // CONCATENATED MODULE: ./lib/h.js
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 /**
  * Virtual DOM
@@ -316,265 +162,408 @@ const setAttr = function (node, key, value) {
  * @param {Array<Element>|String} children
  */
 
-class h_h {
-    constructor(tagName, props, children) {
-        if (!(this instanceof h_h)) {
-            console.log('this', this)
-            if (!isArray(children) && children !== null) {
-                children = slice(arguments, 2).filter(truthy)
-            }
-            return new h_h(tagName, props, children)
-        }
-        // 未填写 props 选项时，props 置 {}
-        if (isArray(props)) {
-            children = props
-            props = {}
-        }
+var h_Element =
+/*#__PURE__*/
+function () {
+  function Element(tagName, props, children) {
+    _classCallCheck(this, Element);
 
-        this.tagName = tagName
-        this.props = props || {}
-        this.children = children || []
-        this.key = props ? props.key : void 666
-
-        let count = 0
-
-        each(this.children, (child, i) => {
-            if (child instanceof h_h) {
-                count += child.count
-            } else {
-                children[i] = '' + child
-            }
-            count++
-        })
-
-        this.count = count
+    if (isArray(props)) {
+      children = props;
+      props = {};
     }
 
-    render() {
-        const el = document.createElement(this.tagName)
-        const props = this.props
+    this.tagName = tagName;
+    this.props = props || {};
+    this.children = children || [];
+    this.key = props ? props.key : void 0;
+  }
 
-        for (let key in props) {
-            const value = props[key]
-            setAttr(el, key, value)
-        }
+  _createClass(Element, [{
+    key: "render",
+    value: function render() {
+      var el = document.createElement(this.tagName);
+      var props = this.props;
 
-        each(this.children, function (child) {
-            const childEl = child instanceof h_h
-                ? child.render()
-                : document.createTextNode(child)
-            el.appendChild(childEl)
-        })
-        return el
+      for (var key in props) {
+        setAttr(el, key, props[key]);
+      }
+
+      each(this.children, function (child) {
+        var childEl = child instanceof Element ? child.render() : document.createTextNode(child);
+        el.appendChild(childEl);
+      });
+
+      return el;
     }
+  }]);
+
+  return Element;
+}();
+
+function h(tagName, props, children) {
+  return new h_Element(tagName, props, children);
+}
+// CONCATENATED MODULE: ./shared/list-diff.js
+
+/**
+ * Diff two list in O(n)
+ * @param {Array} oldList 
+ * @param {Array} newList 
+ * @param {String} key 
+ */
+
+function listDiff(oldList, newList, key) {
+  var oldMap = getKeyIndexAndFree(oldList, key);
+  var newMap = getKeyIndexAndFree(newList, key);
+  var oldKeyIndex = oldMap.keyIndex;
+  var newKeyIndex = newMap.keyIndex;
+  var newFree = newMap.free;
+  var moves = [],
+      children = [],
+      freeIndex = 0;
+
+  each(oldList, function (item) {
+    var itemKey = getItemKey(item, key);
+
+    if (itemKey) {
+      if (!newKeyIndex.hasOwnProperty(itemKey)) {
+        children.push(null);
+      } else {
+        var newItemIndex = newKeyIndex[itemKey];
+        children.push(newList[newItemIndex]);
+      }
+    } else {
+      var freeItem = newFree[freeIndex++] || null;
+      children.push(freeItem);
+    }
+  });
+
+  var simulateList = children.slice(0); // Remove null element
+
+  each(simulateList, function (item, i) {
+    if (item === null) {
+      remove(i);
+
+      utils_remove(simulateList, i);
+    }
+  });
+
+  var j = 0,
+      i = 0;
+
+  while (i < newList.length) {
+    var item = newList[i];
+    var itemKey = getItemKey(item, key);
+    var simulateItem = simulateList[j];
+    var simulateItemKey = getItemKey(simulateItem, key);
+
+    if (simulateItem) {
+      if (itemKey === simulateItemKey) {
+        j++;
+      } else {
+        if (!oldKeyIndex.hasOwnProperty(itemKey)) {
+          insert(i, item);
+        } else {
+          var nextItemKey = getItemKey(simulateList[j + 1], key);
+
+          if (nextItemKey === itemKey) {
+            remove(i);
+
+            utils_remove(simulateList, j);
+
+            j++;
+          } else {
+            insert(i, item);
+          }
+        }
+      }
+    } else {
+      insert(i, item);
+    }
+
+    i++;
+  }
+
+  function remove(index) {
+    var move = {
+      index: index,
+      type: 0
+    };
+    moves.push(move);
+  }
+
+  function insert(index, item) {
+    var move = {
+      index: index,
+      item: item,
+      type: 1
+    };
+    moves.push(move);
+  }
+
+  return {
+    moves: moves,
+    children: children
+  };
+}
+/**
+ * Transfer list to key-item keyIndex
+ * @param {Array} list 
+ * @param {String|Function} key default is key
+ */
+
+function getKeyIndexAndFree(list, key) {
+  var keyIndex = {},
+      free = [];
+
+  each(list, function (item, i) {
+    var itemKey = getItemKey(item, key);
+
+    if (itemKey) {
+      keyIndex[itemKey] = i; // { key: index }
+    } else {
+      free.push(item);
+    }
+  });
+
+  return {
+    keyIndex: keyIndex,
+    free: free
+  };
 }
 
-/* harmony default export */ var lib_h = (h_h);
-// EXTERNAL MODULE: ./node_modules/list-diff2/index.js
-var list_diff2 = __webpack_require__(0);
-var list_diff2_default = /*#__PURE__*/__webpack_require__.n(list_diff2);
-
+function getItemKey(item, key) {
+  if (!item || !key) return;
+  return typeof key === 'string' ? item[key] : key(item);
+}
 // CONCATENATED MODULE: ./shared/constants.js
-const DIFF_STATUS = {
-    REPLACE: 0,
-    REORDER: 1,
-    PROPS: 2,
-    TEXT: 3
-}
+/**
+ * @param REPLACE Replace origin node
+ * @param REORDER Remove node, delete node, add new node
+ * @param PROPS Change props content
+ * @param TEXT Change text node
+ */
+var DIFF_STATE = {
+  REPLACE: 0,
+  REORDER: 1,
+  PROPS: 2,
+  TEXT: 3
+};
 // CONCATENATED MODULE: ./lib/diff.js
 
+ // import listDiff from 'list-diff2'
 
 
+var diff_key = 0;
+function diff(oldDomTree, newDomTree) {
+  var index = 0;
+  var patches = {}; // Record differences
 
-function diff(oldTree, newTree) {
-    const index = 0
-    const patches = {}
-    dfsWalk(oldTree, newTree, index, patches)
-    return patches
+  dfs(oldDomTree, newDomTree, index, patches);
+  return patches;
 }
+/**
+ * function dfs
+ * @param {Object} oldNode 
+ * @param {Object} newNode 
+ * @param {Number} index 
+ * @param {Object} patches 
+ */
 
-function dfsWalk(oldNode, newNode, index, patches) {
-    let currentPatch = []
+function dfs(oldNode, newNode, index, patches) {
+  var currentPatch = [];
 
-    if (newNode === null) {
+  if (!newNode) {// old node removed, as no new Nodes
+  } else if (isString(oldNode) && isString(newNode)) {
+    // TextNode content replacing
+    if (newNode !== oldNode) currentPatch.push({
+      type: DIFF_STATE.TEXT,
+      content: newNode
+    });
+  } else if (oldNode.tagName === newNode.tagName && oldNode.key === newNode.key) {
+    // Nodes are the same, diff old node's props and children
+    // Diff props
+    var propsPatches = diffProps(oldNode.props, newNode.props);
+    if (propsPatches) currentPatch.push({
+      type: DIFF_STATE.PROPS,
+      props: propsPatches
+    }); // Diff children
 
-    } else if (isString(oldNode) && isString(newNode)) { // TextNode content replacing
-        if (newNode !== oldNode) {
-            currentPatch.push({ type: DIFF_STATUS.TEXT, content: newNode })
-        }
-    } else if(oldNode.tagName === newNode.tagName && oldNode.key === newNode.key) { // Nodes are the same, diff old node's props and children
-        // diff props
-        const propsPatches = diffProps(oldNode, newNode)
-        if (propsPatches) {
-            currentPatch.push({ type: DIFF_STATUS.PROPS, props: propsPatches })
-        }
-        // diff children If the node has a `ignore` property, do not diff children
-        if (!isIgnoreChildren(newNode)) {
-            diffChildren(oldNode.children, newNode.children, index, patches, currentPatch)
-        }
-    } else { // Nodes are not the same, replace the old node with new node
-        currentPatch.push({ type: DIFF_STATUS.REPLACE, node: newNode })
+    diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
+  } else {
+    // Nodes are not the same, replace the old node with new node
+    currentPatch.push({
+      type: DIFF_STATE.REPLACE,
+      node: newNode
+    });
+  }
+
+  if (currentPatch.length) patches[index] = currentPatch;
+}
+/**
+ * function diffProps
+ * @param {Ojbect} oldProps 
+ * @param {Object} newProps 
+ */
+
+
+function diffProps(oldProps, newProps) {
+  var count = 0,
+      key,
+      propsPatches = {}; // Find out different properties
+
+  for (key in oldProps) {
+    if (newProps[key] !== oldProps[key]) {
+      count++;
+      propsPatches[key] = newProps[key];
     }
+  } // Find out new property
 
-    if (currentPatch.length) patches[index] = currentPatch
-}
 
-function isIgnoreChildren (node) {
-    return node.props && node.props.hasOwnProperty('ignore')
-}
-
-function diffProps(oldNode, newNode) {
-    const oldProps = oldNode.props
-    const newProps = newNode.props
-
-    let count = 0,
-        key, 
-        value, 
-        propsPatches = {}
-
-    //  different properties
-    for(key in oldProps) {
-        value = oldProps[key]
-        if (newProps[key] !== value) {
-            count ++
-            propsPatches[key] = newProps[key]
-        }
+  for (key in newProps) {
+    if (!oldProps.hasOwnProperty(key)) {
+      count++;
+      propsPatches[key] = newProps[key];
     }
+  }
 
-    // new property
-    for (key in newProps) {
-        value = newProps[key]
-        if (!oldProps.hasOwnProperty(key)) {
-            count ++
-            propsPatches[key] = newProps[key]
-        }
-    }
-
-    if (count === 0) return null
-    return propsPatches
+  return count !== 0 ? propsPatches : null;
 }
+
+var count = 0;
 
 function diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
-    const diffs = list_diff2_default()(oldChildren, newChildren, 'key')
-    newChildren = diffs.children
+  var diffs = listDiff(oldChildren, newChildren, 'key');
+  newChildren = diffs.children;
+  if (diffs.moves.length) currentPatch.push({
+    type: DIFF_STATE.REORDER,
+    moves: diffs.moves
+  });
+  var currentNodeIndex = index;
 
-    if (diffs.moves.length) currentPatch.push({ type: DIFF_STATUS.REORDER, moves: diffs.moves })
-    let leftNode = null
-    let currentNodeIndex = index
-    each(oldChildren, function(child, i) {
-        const newChild = newChildren[i]
-        currentNodeIndex = leftNode && leftNode.count 
-            ? currentNodeIndex + leftNode.count + 1
-            : currentNodeIndex + 1
-        dfsWalk(child, newChild, currentNodeIndex, patches)
-        leftNode = child
-    })
+  each(oldChildren, function (child, i) {
+    count++;
+    currentNodeIndex = count;
+    var newChild = newChildren[i];
+    dfs(child, newChild, currentNodeIndex, patches);
+  });
 }
 // CONCATENATED MODULE: ./lib/patch.js
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
 
 function patch(node, patches) {
-    const walker = { index: 0 }
-    patch_dfsWalk(node, walker, patches)
+  var walker = {
+    index: 0
+  };
+  patch_dfs(node, walker, patches);
 }
 
-function patch_dfsWalk(node, walker, patches) {
-    const currentPatches = patches[walker.index]
+function patch_dfs(node, walker, patches) {
+  var currentPatches = patches[walker.index];
+  var len = node.childNodes ? node.childNodes.length : 0;
 
-    const len = node.childNodes ? node.childNodes.length : 0
+  for (var i = 0; i < len; i++) {
+    var child = node.childNodes[i];
+    walker.index++;
+    patch_dfs(child, walker, patches);
+  }
 
-    for (let i = 0; i < len; i++) {
-        const child = node.childNodes[i]
-        walker.index++
-        patch_dfsWalk(child, walker, patches)
-    }
-
-    if (currentPatches) {
-        applyPatches(node, currentPatches)
-    }
+  if (currentPatches) {
+    applyPatches(node, currentPatches);
+  }
 }
 
 function applyPatches(node, currentPatches) {
-    each(currentPatches, currentPatch => {
-        switch (currentPatch.type) {
-            case DIFF_STATUS.REPLACE:
-                const newNode = typeof currentPatch.node === 'string'
-                    ? document.createTextNode(currentPatch.node)
-                    : currentPatch.node.render()
-                node.parentNode.replaceChild(newNode, node)
-                break
-            case DIFF_STATUS.REORDER:
-                reorderChildren(node, currentPatch.moves)
-                break
-            case DIFF_STATUS.PROPS:
-                setProps(node, currentPatch.props)
-                break
-            case DIFF_STATUS.TEXT:
-                if (node.textContent) {
-                    node.textContent = currentPatch.content
-                } else {
-                    node.nodeValue = currentPatch.content
-                }
-                break
-            default:
-                throw new Error('Unknown patch type ' + currentPatch.type)
+  each(currentPatches, function (currentPatch) {
+    switch (currentPatch.type) {
+      case DIFF_STATE.REPLACE:
+        var newNode = typeof currentPatch.node === 'string' ? document.createTextNode(currentPatch.node) : currentPatch.node.render();
+        node.parentNode.replaceChild(newNode, node);
+        break;
+
+      case DIFF_STATE.REORDER:
+        reorderChildren(node, currentPatch.moves);
+        break;
+
+      case DIFF_STATE.PROPS:
+        setProps(node, currentPatch.props);
+        break;
+
+      case DIFF_STATE.TEXT:
+        if (node.textContent) {
+          node.textContent = currentPatch.content;
+        } else {
+          // for ie
+          node.nodeValue = currentPatch.content;
         }
-    })
+
+        break;
+
+      default:
+        throw new Error('Unknown patch type ' + currentPatch.type);
+    }
+  });
 }
 
 function setProps(node, props) {
-    for (let key in props) {
-        if (props[key] === void 666) {
-            node.removeAttribute(key)
-        } else {
-            setAttr(node, key, props[key])
-        }
+  for (var key in props) {
+    if (!props[key]) {
+      node.removeAttribute(key);
+    } else {
+      setAttr(node, key, props[key]);
     }
+  }
 }
 
 function reorderChildren(node, moves) {
-    const staticNodeList = toArray(node.childNodes)
-    let maps = {}
+  var staticNodeList = toArray(node.childNodes);
 
-    each(staticNodeList, node => {
-        if (node.nodeType === 1) {
-            const key = node.getAttribute('key')
-            if (key) {
-                maps[key] = node
-            }
-        }
-    })
+  var maps = {};
 
-    each(moves, move => {
-        const index = move.index
+  each(staticNodeList, function (node) {
+    if (node.nodeType === 1) {
+      // 1 is Element
+      var key = node.getAttribute('key');
 
-        if (move.type === 0) {
-            if (staticNodeList[index] === node.childNodes[index]) {
-                node.removeChild(node.childNodes[index])
-            }
-            staticNodeList.splice(index, 1)
-        } else if (move.type === 1) {
-            const insertNode = maps[move.item.key]
-                ? maps[move.item.key].cloneNode(true)
-                : typeof move.item === 'object'
-                    ? move.item.render()
-                    : document.createTextNode(move.item)
-            staticNodeList.splice(index, 0, insertNode)
-            node.insertBefore(insertNode, node.childNodes[index] || null)
-        }
-    })
+      if (key) {
+        maps[key] = node;
+      }
+    }
+  });
+
+  each(moves, function (move) {
+    var index = move.index;
+    var currentNode = node.childNodes[index];
+
+    if (move.type === 0) {
+      // 0 is remove 1 is insert
+      if (staticNodeList[index] === currentNode) {
+        node.removeChild(currentNode);
+      }
+
+      staticNodeList.splice(index, 1);
+    } else if (move.type === 1) {
+      var insertNode = maps[move.item.key] ? maps[move.item.key].cloneNode(true) : _typeof(move.item) === 'object' ? move.item.render() : document.createTextNode(move.item);
+      staticNodeList.splice(index, 0, insertNode);
+      node.insertBefore(insertNode, currentNode || null);
+    }
+  });
 }
 // CONCATENATED MODULE: ./index.js
-/* concated harmony reexport h */__webpack_require__.d(__webpack_exports__, "h", function() { return lib_h; });
+/* concated harmony reexport h */__webpack_require__.d(__webpack_exports__, "h", function() { return h; });
 /* concated harmony reexport diff */__webpack_require__.d(__webpack_exports__, "diff", function() { return diff; });
 /* concated harmony reexport patch */__webpack_require__.d(__webpack_exports__, "patch", function() { return patch; });
 
 
 
-
-window.vDom = { h: lib_h, diff: diff, patch: patch }
-
+window.vDom = {
+  h: h,
+  diff: diff,
+  patch: patch
+};
 
 
 /***/ })
