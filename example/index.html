@@ -40,6 +40,7 @@
         ])
 
         const root = tree.render()
+        console.log('tree', root)
         document.body.appendChild(root)
 
         const newTree = h('div', { 'id': 'container', 'class': 'wrapper' }, [

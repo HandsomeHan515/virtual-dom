@@ -186,7 +186,9 @@ function () {
       var props = this.props;
 
       for (var key in props) {
-        setAttr(el, key, props[key]);
+        if (props.hasOwnProperty(key)) {
+          setAttr(el, key, props[key]);
+        }
       }
 
       each(this.children, function (child) {
